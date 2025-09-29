@@ -1,3 +1,31 @@
+# LLM / RAG core
 langchain==0.3.27
 langchain_core==0.3.76
+
+# vector db connector
+langchain-astradb==0.6.1
+
+# LLM providers 
+langchain-google-genai==2.1.8
+langchain-groq==0.3.6
+langchain-openai==0.3.32
+
+# web/API app & server
+fastapi==0.116.1
+uvicorn==0.35.0
+python-multipart==0.0.20
+jinja2==3.1.6
+streamlit==1.49.1
+
+# web scraping & HTML parsing
+selenium==4.35.0
+undetected-chromedriver==3.5.5
+beautifulsoup4==4.13.5
+lxml==6.0.1
+html5lib==1.1
+
+# config & logging
 python-dotenv==1.1.1
+structlog==25.4.0
+
+-e .
