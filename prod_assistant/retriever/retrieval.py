@@ -12,8 +12,6 @@ from dotenv import load_dotenv
 
 class Retriever:
     def __init__(self):
-        """_summary_
-        """
         self.model_loader=ModelLoader()
         self.config=load_config()
         self._load_env_variables()
@@ -21,7 +19,8 @@ class Retriever:
         self.retriever_instance = None
     
     def _load_env_variables(self):
-        """_summary_
+        """
+        Load and validate environment variables for Google and Astra DB.
         """
         load_dotenv()
          
@@ -38,7 +37,8 @@ class Retriever:
         self.db_keyspace = os.getenv("ASTRA_DB_KEYSPACE")
     
     def load_retriever(self):
-        """_summary_
+        """
+        creates an Astra DB–based retriever with MMR and LLM compression.
         """
         if not self.vstore:
             collection_name = self.config["astra_db"]["collection_name"]
@@ -75,33 +75,34 @@ class Retriever:
         return self.retriever_instance
             
     def call_retriever(self,query):
-        """_summary_
+        """
+        Retrieve and return relevant documents for the given query.
         """
         retriever=self.load_retriever()
         output=retriever.invoke(query)
         return output
 
-# to test retriever
-if __name__=='__main__':
-    user_query = "Can you suggest good budget iPhone under 1,00,00 INR?"
+# # to test retriever
+# if __name__=='__main__':
+#     user_query = "Can you suggest good budget iPhone under 1,00,00 INR?"
     
-    retriever_obj = Retriever()
+#     retriever_obj = Retriever()
     
-    retrieved_docs = retriever_obj.call_retriever(user_query)
+#     retrieved_docs = retriever_obj.call_retriever(user_query)
     
-    def _format_docs(docs) -> str:
-        if not docs:
-            return "No relevant documents found."
-        formatted_chunks = []
-        for d in docs:
-            meta = d.metadata or {}
-            formatted = (
-                f"Title: {meta.get('product_title', 'N/A')}\n"
-                f"Price: {meta.get('price', 'N/A')}\n"
-                f"Rating: {meta.get('rating', 'N/A')}\n"
-                f"Reviews:\n{d.page_content.strip()}"
-            )
-            formatted_chunks.append(formatted)
-        return "\n\n---\n\n".join(formatted_chunks)
+#     def _format_docs(docs) -> str:
+#         if not docs:
+#             return "No relevant documents found."
+#         formatted_chunks = []
+#         for d in docs:
+#             meta = d.metadata or {}
+#             formatted = (
+#                 f"Title: {meta.get('product_title', 'N/A')}\n"
+#                 f"Price: {meta.get('price', 'N/A')}\n"
+#                 f"Rating: {meta.get('rating', 'N/A')}\n"
+#                 f"Reviews:\n{d.page_content.strip()}"
+#             )
+#             formatted_chunks.append(formatted)
+#         return "\n\n---\n\n".join(formatted_chunks)
     
-    retrieved_contexts = [_format_docs(doc) for doc in retrieved_docs]
+#     retrieved_contexts = [_format_docs(doc) for doc in retrieved_docs]
