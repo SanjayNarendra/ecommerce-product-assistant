@@ -14,6 +14,7 @@ dependencies = [
     "python-dotenv==1.1.1",
     "streamlit==1.49.1",
 ]
+authors = [{ name = "Sanjay Narendra"}]
 
 [tool.setuptools.packages.find]
 where = ["."]

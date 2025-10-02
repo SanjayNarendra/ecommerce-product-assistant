@@ -1,6 +1,8 @@
 # LLM / RAG core
 langchain==0.3.27
 langchain_core==0.3.76
+langgraph==0.6.7
+ragas==0.3.4
 
 # vector db connector
 langchain-astradb==0.6.1
@@ -20,6 +22,7 @@ streamlit==1.49.1
 # web scraping & HTML parsing
 selenium==4.35.0
 undetected-chromedriver==3.5.5
+ddgs==9.6.0
 beautifulsoup4==4.13.5
 lxml==6.0.1
 html5lib==1.1
