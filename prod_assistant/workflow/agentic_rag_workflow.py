@@ -9,6 +9,7 @@ from langgraph.checkpoint.memory import MemorySaver
 from prod_assistant.prompt_library.prompts import PROMPT_REGISTRY, PromptType
 from prod_assistant.retriever.retrieval import Retriever
 from prod_assistant.utils.model_loader import ModelLoader
+from prod_assistant.evaluation.ragas_eval import evaluate_context_precision, evaluate_response_relevancy
 
 
 class AgenticRAG:
@@ -61,7 +62,8 @@ class AgenticRAG:
         print("--- RETRIEVER ---")
         query = state["messages"][-1].content
         retriever = self.retriever_obj.load_retriever()
-        docs = retriever.invoke(query)
+        docs_raw = retriever.invoke(query)
+        docs = [d[0] if isinstance(d, tuple) else d for d in docs_raw]
         context = self._format_docs(docs)
         return {"messages": [HumanMessage(content=context)]}
 
@@ -123,13 +125,28 @@ class AgenticRAG:
     # ---------- Public Run ----------
     def run(self, query: str, thread_id: str = "default_thread") -> str:
         """Run the workflow for a given query and return the final answer."""
-        result = self.app.invoke({"messages": [HumanMessage(content=query)]},
-                                 config={"configurable": {"thread_id": thread_id}}      
-                                 )
+        result = self.app.invoke(
+            {"messages": [HumanMessage(content=query)]},
+            config={"configurable": {"thread_id": thread_id}}
+            )
         return result["messages"][-1].content
 
 # ---------- Test ----------
 if __name__ == "__main__":
     rag_agent = AgenticRAG()
-    answer = rag_agent.run("What is the price of iPhone 16?")
-    print("\nFinal Answer:\n", answer)
+    user_query = "What is the price of iPhone 16?"
+    response = rag_agent.run(user_query)
+
+    retriever = rag_agent.retriever_obj.load_retriever()
+    raw = retriever.invoke(user_query)
+    docs = [d[0] if isinstance(d, tuple) else d for d in raw]
+    retrieved_contexts = [rag_agent._format_docs([d]) for d in docs]
+
+    context_score = evaluate_context_precision(user_query, response, retrieved_contexts)
+    relevancy_score = evaluate_response_relevancy(user_query, response, retrieved_contexts)
+
+    print("\nFinal Answer:\n", response)
+    print("\n--- Evaluation Metrics ---")
+    print("Context Precision Score:", context_score)
+    print("Response Relevancy Score:", relevancy_score)
+    print("Num Contexts:", len(retrieved_contexts))
